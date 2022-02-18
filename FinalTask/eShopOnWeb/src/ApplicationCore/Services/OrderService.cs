@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
@@ -49,5 +53,23 @@ public class OrderService : IOrderService
         var order = new Order(basket.BuyerId, shippingAddress, items);
 
         await _orderRepository.AddAsync(order);
+
+        var orderJson = JsonSerializer.Serialize(order);
+
+        var queueClient = new QueueClient("Endpoint=sb://fvoicens.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=3hOlC2+c2d59iqhgi2U66yGoJ3tCajK7jzDiyxG80HA=",
+        "orders");
+
+        try
+        {
+            var message = new Message(Encoding.UTF8.GetBytes(orderJson));
+            Console.WriteLine($"Sending message: {orderJson}");
+            await queueClient.SendAsync(message);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine($"{DateTime.Now} :: Exception: {exception.Message}");
+        }
+
+        await queueClient.CloseAsync();
     }
 }

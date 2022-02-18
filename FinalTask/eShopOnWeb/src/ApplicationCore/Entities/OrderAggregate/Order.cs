@@ -14,9 +14,9 @@ public class Order : BaseEntity, IAggregateRoot
 
     public Order(string buyerId, Address shipToAddress, List<OrderItem> items)
     {
-        Guard.Against.NullOrEmpty(buyerId, nameof(buyerId));
-        Guard.Against.Null(shipToAddress, nameof(shipToAddress));
-        Guard.Against.Null(items, nameof(items));
+        //Guard.Against.NullOrEmpty(buyerId, nameof(buyerId));
+        //Guard.Against.Null(shipToAddress, nameof(shipToAddress));
+        //Guard.Against.Null(items, nameof(items));
 
         BuyerId = buyerId;
         ShipToAddress = shipToAddress;
