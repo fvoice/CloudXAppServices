@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -69,7 +70,13 @@ public class OrderService : IOrderService
         {
             Console.WriteLine($"{DateTime.Now} :: Exception: {exception.Message}");
         }
-
         await queueClient.CloseAsync();
+
+        using (var client = new HttpClient())
+        {
+            var content = new StringContent(orderJson, Encoding.UTF8, "application/json");
+            var result = await client.PostAsync(
+                "https://fvoicefunc.azurewebsites.net/api/ProcessOrder2?code=oEnNDAMKWnQ5Ht7Y2UMZo1kCRS1qTU3Y/8axH9TAaOXEIKKCxrpgkw==", content);
+        }
     }
 }
